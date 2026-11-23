@@ -1,0 +1,35 @@
+package Vista;
+
+import Cartas.Carta;
+import Partida.IJugador;
+
+public interface IVista {
+    void MostrarJugadores(IJugador[] jugador);
+    void MostrarManoJugador();
+    void iniciar();
+    boolean menu();
+
+    //Usadas en el inicio del juego para ver quien inicia y repartir las cartas
+    public Carta devolverCartaRoboInicial();
+    public Carta RoboInicialJoquer();
+    public void mostrarQueInicia();
+    public void vaciarMano();
+
+    //usadas para repatir cartas y cortar el mazo
+    public void cortarMazo();
+    public void RobarCarta();
+    public Integer tieneTresRojos();
+    void repartirCartaInicialesMesa();
+    void jugadaInicial();
+
+    //Jugada
+    void AvisarJugada();
+    void AvisarNoJugada();
+
+    //Tapon
+    void AvisarTapon();
+    void AvisarNoTapon();
+
+    //descartarCarta
+    void MostrarDescarte();
+}

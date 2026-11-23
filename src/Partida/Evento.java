@@ -1,0 +1,11 @@
+package Partida;
+
+public enum Evento {
+    TOMAR_PILA,
+    ABRIRSE,
+    TOMAR_CARTAS_MAZO,
+    TAPONEAR_DESCARTE,
+    AGREGAR_CANASTA,
+    AGREGAR_CARTA_CANASTA,
+    DESCARTAR_CARTA
+}
