@@ -36,6 +36,9 @@ public class Controlador implements IObservador {
             case AGREGAR_CARTA_CANASTA:
                 this.vista.AvisarJugada();
                 break;
+            case JUGAR_TRES_ROJOS:
+                this.vista.AvisarTresRojo();
+                break;
             //Aca se escribirian los eventos y los cambios que deveria haber con los eventos creados
         }
     }
@@ -60,10 +63,10 @@ public class Controlador implements IObservador {
         return this.partida;
     }
 
-    public boolean robarPoteInicial(){ //Devuelve true si hace la apcion
-        ArrayList<Carta> mano = new ArrayList<>();
+    public boolean robarPote(){ //Devuelve false si hace la apcion
+        ArrayList<Carta> mano;
         mano = this.getJugador().mostrar_mano();
-        boolean comprobador = false;
+        boolean comprobador = true;
         Carta tope = this.GetMesa().getDescarte().mostrarTope();
         int repeticion = 0;
         for (Carta c : mano){
@@ -73,7 +76,7 @@ public class Controlador implements IObservador {
         }
         if (repeticion >= 2){
             this.jugador.agregarDescarteMano(this.GetMesa().getDescarte().robarPila());
-            comprobador = true;
+            comprobador = false;
         }
         return comprobador;
     }
@@ -93,8 +96,18 @@ public class Controlador implements IObservador {
         else {return partida.getJugadasEquipo2();}
     }
 
+    public ArrayList<Carta> PasarTresRojos(Integer equipo){
+        if (equipo == 1){
+            return partida.getTreRojosEquipo1();
+        }
+        else return partida.getTreRojosEquipo2();
+    }
+
     public boolean Abrirse(ArrayList<Integer> lugares){//Hacer una jugada de minimo 3 cartas
         ArrayList<Carta> jugadas;
+        if (lugares.isEmpty()){
+            return false;
+        }
         boolean comprobar = jugador.comprobarJugada(lugares);
         if (comprobar) {
             jugadas = jugador.abrirse(lugares);
@@ -118,7 +131,8 @@ public class Controlador implements IObservador {
             if (comprobante){
                 vista.AvisarJugada();
             }
-            else {vista.AvisarNoJugada();}
+            else {vista.AvisarNoJugada();
+            jugador.devolverCartasJugador(jugadas);} //devolvermos las cartas a la mano del jugador para q no se pierdan
         }
         else {vista.AvisarNoJugada();} //Avisa que la jugada no se realizo
         return comprobante;
@@ -134,10 +148,6 @@ public class Controlador implements IObservador {
         }
         else {vista.AvisarNoJugada();} //Avisa que la jugada no se realizo
         return jugador.comprobarJugada(lugares);
-    }
-
-    public void robarPote(){ //Roba todas las cartas que pueda del pote esta obligado a poder hacer una jugada con la carta del tope
-        this.jugador.agregarDescarteMano(this.partida.getDescarte().robarPila()); //
     }
 
     public boolean taponear(Integer i){
@@ -181,6 +191,15 @@ public class Controlador implements IObservador {
                 }
             }
         }
+        return cantidad;
+    }
+
+    public Integer JugarTresRojos(){
+        Integer cantidad;
+        ArrayList<Carta> Tres;
+        Tres = this.jugador.jugarTresRojo();
+        this.partida.JugarTresRojos(this.jugador, Tres);
+        cantidad = Tres.size();
         return cantidad;
     }
 }

@@ -13,7 +13,9 @@ public class Mesa extends Observable {
     private Mazo descarte; //Maneja el descarte de la partida tambien se puede decir que son las cartas que estan en la mesa
     private HashMap<Integer, IJugador> jugadores; //Guarda a los jugadores cada mesa lo guarda para un futuro si se quiere jugar varias mesas a la ves
     private ArrayList<Carta> jugadasEquipo1 = new ArrayList<>(); //Guarda las jugadas que hayan echo los jugadores
+    private ArrayList<Carta> treRojosEquipo1 = new ArrayList<>();
     private ArrayList<Carta> jugadasEquipo2 = new ArrayList<>(); //Guarda las jugadas que hayan echo los jugadores
+    private ArrayList<Carta> treRojosEquipo2 = new ArrayList<>();
     private Carta corte = new Carta("Corte","0",0,-1000); //Place older para poner al corte de los mazos equipo1/2
     Integer conteoE= 0;
     //Cuando un jugador hace una jugada valida se guarda en el mazo equipo1/2 y se suman los puntos a los jugadores Esta se separan por un objeto carta con valor base -999 para poder
@@ -34,6 +36,10 @@ public class Mesa extends Observable {
     public ArrayList<Carta> getJugadasEquipo2() {
         return jugadasEquipo2;
     }
+
+    public ArrayList<Carta> getTreRojosEquipo1(){return treRojosEquipo1;}
+
+    public ArrayList<Carta> getTreRojosEquipo2() {return treRojosEquipo2;}
 
     public Mazo getDescarte() {
         this.NotificarObservador(Evento.TOMAR_PILA);
@@ -107,17 +113,6 @@ public class Mesa extends Observable {
              return true;} // caso contrario se devuelve la carta al mazo al final del mismo
     }
 
-    public ArrayList<Carta> revisarTresRojos(IJugador jugador){
-        ArrayList<Carta> mano = jugador.mostrar_mano(); //obtengo la mano del jugador para revisar si tiene 3 rojos
-        ArrayList<Carta> tresR = new ArrayList<>();
-        for (Carta c : mano){ //recorro la mano para buscar 3 rojo y preguntar si lo quiere jugar
-            if (c.getPuntos() == 100){
-                tresR.add(c); // Agregamos el 3 rojo
-            }
-        }
-        return tresR;
-    }
-
     public Carta repartirCartasInicialesMesa(){
         Carta inicial;
         for (Integer i = 0; i < 6; i++){
@@ -175,10 +170,9 @@ public class Mesa extends Observable {
             contador++;
             contadorTotal++;
             if (contadorJugadas == lugarAgregar){ //bien
-                if (c.getValorInicial() == cartaAbuscar.getValorInicial() || c.getValorInicial() == 2 || c.getValorInicial() == 999 || c.getValorInicial() == -1000){
+                if (c.getValorInicial() == cartaAbuscar.getValorInicial()){
                     comprobante = true;
                 }
-                else {comprobante = false;}
                 if ( 7 > contador + jugada.size()){ //tiene que ser menor a 7 para anadir
                     lugar = contadorTotal;
                 }
@@ -193,14 +187,14 @@ public class Mesa extends Observable {
         } //una ves salido de aca revisamos donde puedo agregar el valor y si se puede agregar
         contadorTotal = 0;
         equipo.clear();
-        for (Carta c : nuevaJugada){
-            equipo.add(c);
-            if (contadorTotal == lugar){ //cuando contador sea igual a lugar significa que voy a agregar los valores nuevos
-                equipo.addAll(jugada); //Agregamos los valores
-            }
-            contadorTotal++;
-        }
         if (comprobante){
+            for (Carta c : nuevaJugada){
+                equipo.add(c);
+                if (contadorTotal == lugar){ //cuando contador sea igual a lugar significa que voy a agregar los valores nuevos
+                    equipo.addAll(jugada); //Agregamos los valores
+                }
+                contadorTotal++;
+            }
             this.NotificarObservador(Evento.AGREGAR_CARTA_CANASTA);
         }
         return comprobante;
@@ -213,5 +207,15 @@ public class Mesa extends Observable {
 
     private void SumarPuntos(IJugador jugador,Integer puntos){
         ;
+    }
+
+    public void JugarTresRojos(IJugador jugador, ArrayList<Carta> tres){
+        if (jugador.getEquipo() == 1){
+            this.treRojosEquipo1.addAll(tres);
+        }
+        else {
+            this.treRojosEquipo2.addAll(tres);
+        }
+        this.NotificarObservador(Evento.JUGAR_TRES_ROJOS);
     }
 }

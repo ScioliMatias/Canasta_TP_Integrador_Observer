@@ -16,7 +16,6 @@ public class Jugador implements IJugador{
     private boolean cortePerfecto = false;
     private static  int ID= 0;
     private int id;
-    private ArrayList<Carta> Tres = new ArrayList<>(); //se usa para poner los 3 rojos
 
     public Integer getPuntos() {
         return puntos;
@@ -29,19 +28,15 @@ public class Jugador implements IJugador{
         this.id = Jugador.ID++; //Le pongo id y luego le aumento el id a todos los siguientes usuarios
     }
 
-    public Integer jugarTresRojo(){
-        int tiene = 0;
+    public ArrayList<Carta> jugarTresRojo(){
+        ArrayList<Carta> Tres = new ArrayList<>();
         for (Carta c : mano){ //recorre la mano en busqueda de los 3 rojos
             if (c.getPuntos() == 100){
-                this.Tres.add(c);
-                tiene++;
+                Tres.add(c);
             }
         }
-        return tiene;
-    }
-
-    public ArrayList<Carta> getTresRojos(){
-        return this.Tres;
+        mano.removeAll(Tres);
+        return Tres;
     }
 
     public int getId() {return id;}
@@ -196,5 +191,9 @@ public class Jugador implements IJugador{
             this.mano.remove(c);
         }
         return jugada; //Como las jugadas no se guardan en el jugador las devuelvo al controlador
+    }
+
+    public void devolverCartasJugador(ArrayList<Carta> cartas){
+        mano.addAll(cartas);
     }
 }

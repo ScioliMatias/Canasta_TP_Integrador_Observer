@@ -10,8 +10,6 @@ public interface IJugador {
     public int getId();
     String getNombre();
     public ArrayList<Carta> mostrar_mano();
-    public Integer jugarTresRojo();
-    public ArrayList<Carta> getTresRojos();
     public Integer getPuntos();
     void agregarDescarteMano(ArrayList<Carta> descarte);
     public void agregarCartaMano(Carta carta);
@@ -25,7 +23,9 @@ public interface IJugador {
     //Anadir carta canasta
     public boolean comprobarAnadir(ArrayList<Integer> lugares);
     public void setEquipo(Integer equipo);
-
+    void devolverCartasJugador(ArrayList<Carta> cartas);
+    //TRES ROJOS
+    public ArrayList<Carta> jugarTresRojo();
 
     public Carta JugarCartaDescarte(Integer lugarCarta, Integer tamanoMano);
     public Carta mostrarCartaRoboInicial();

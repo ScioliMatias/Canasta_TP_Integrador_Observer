@@ -20,7 +20,6 @@ public interface IVista {
     public void RobarCarta();
     public Integer tieneTresRojos();
     void repartirCartaInicialesMesa();
-    void jugadaInicial();
 
     //Jugada
     void AvisarJugada();
@@ -32,4 +31,7 @@ public interface IVista {
 
     //descartarCarta
     void MostrarDescarte();
+
+    //TresRojos
+    void AvisarTresRojo();
 }

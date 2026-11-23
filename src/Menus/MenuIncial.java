@@ -93,34 +93,24 @@ public class MenuIncial {
                 v1.RobarCarta(); // roba cartas una por una hasta que todos tengan 15
             }
         }
-        //Comprobara si los jugadores tienen 3 rojos de ser asi se les preguntara que quieren hacer con ello
-        for (IVista v1 : jugadores){ //Mostramos las manos iniciales no necesario solo para pruebas
+        //Comprobara si los jugadores tienen 3 rojos de ser asi se jugaran
+        for (IVista v1 : jugadores){
             Integer cantidad = 0;
-            cantidad = v1.tieneTresRojos();
+            cantidad = v1.tieneTresRojos(); //obliga a jugarlos
             for (Integer i = 0 ; i < cantidad; i++){
                 v1.RobarCarta(); //roba cartas hasta recuperar las cartas de los tres rojos
             }
         }
         corta.repartirCartaInicialesMesa(); //Se reparten las 6 cartas iniciales
-        jugadores.getFirst().jugadaInicial(); //La jugada inicial es una jugada que solo puede hacer el primer jugador por eso lo tomamos como algo necesario para el inicio de la partida
-        //ahora si empieza la partida
         Turno();
     }
 
-
-
-
     private void Turno(){
         boolean termino = false;
-        Integer primer = 0;
         while (!termino){
             for (IVista v1: jugadores){ //Turno de cada jugador
-                if (primer == 0){ primer = 1;} //Saltear el primer turno del primer jugador ya que ya lo jugo
-                else {//ahora si el sistema de turnos
-                    v1.menu(); //Menu se encarga de los turnos
-                }
+                   termino  = v1.menu(); //Menu se encarga de los turnos
                 //lAS FUCIONES DEL JUEGO DEVERAN DEVOLVER UN BOOLEANO SIEMPRE SERA FALSO HASTA QUE DEVUELVAN EL FINAL DEL JUEGO EN ESE CASO PASA A TRUE Y SE ACABA LA PARTIDA
-
             }
         }
     }

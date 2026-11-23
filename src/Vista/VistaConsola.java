@@ -28,7 +28,7 @@ public class VistaConsola implements IVista {
     }
 
     public boolean menu() {
-        boolean termino = false;
+        boolean termino;
         termino = this.procesarOpcion();
         return termino;
     }
@@ -43,12 +43,19 @@ public class VistaConsola implements IVista {
             switch (opcion){
                 case ("1"): //Roba el descarte
                     bucle = false;
-                    this.controlador.robarPote();
+                    boolean Hecho = false;
+                    Hecho = this.controlador.robarPote();
+                    while (!Hecho){
+                        this.MostrarManoJugador();
+                        Hecho = this.controlador.Abrirse(PedirJugada());
+                    }
                     break;
                 case ("2"): //tomar carta del mazo (agarrar 2 y tirar 1)
                     bucle = false;
                     this.controlador.robarCartaMazo();
                     this.controlador.robarCartaMazo();
+                    this.tieneTresRojos(); //Si roba algun 3 rojo esta obligado a jugarlo
+                    this.MostrarManoJugador();
                     this.validarOpcionDescarte();
                     break;
                 case ("3"): //Hace una jugada entre 3 a 6 cartas no consideramos 7 ya que eso seria hacer una canasta
@@ -56,8 +63,8 @@ public class VistaConsola implements IVista {
                     jugada = this.controlador.Abrirse(PedirJugada()); // por ahora asi debe crearse un menu que pida que cartas quieren ser parte de las jugadas
                     if (jugada){ //la jugada si se realizo si no seguiria en este bucle
                         bucle = false;
-                        break;
                     }
+                    scanner.nextLine();
                     break;
                 case ("4")://Taponea el mazo
                     Integer lugar = pedirTapon();
@@ -72,6 +79,7 @@ public class VistaConsola implements IVista {
                         bucle = false;
                         break;
                     }//agregar cartas a una canasta (agregas cartas a una canasta para sumar mas puntos)
+                    scanner.nextLine();
                     break;
                 case ("6"): // jugar una canasta de una vez
                     boolean canasta;
@@ -80,6 +88,7 @@ public class VistaConsola implements IVista {
                         bucle = false;
                         break;
                     }
+                    scanner.nextLine();
                     break;
                 case ("7")://Esto no quita el bucle
                         System.out.println("Las jugadas en la mesa son: ");
@@ -88,6 +97,10 @@ public class VistaConsola implements IVista {
                 case ("8"):
                         System.out.println("Tu mano es: ");
                         this.MostrarManoJugador();
+                    break;
+                case ("9")://Esto no quita el bucle
+                    System.out.println("Los tres rojos jugados son: ");
+                    this.MostrarTresRojos();
                     break;
                 default:
                     this.mostrarError("Por favor ingrese una opcion valida");
@@ -137,6 +150,9 @@ public class VistaConsola implements IVista {
             System.out.print("Ingresa la jugada que le quiere añadir la/s carta/s(ponga 999 para salir): ");
             if (scanner.hasNextInt()) {
                 Integer lugar = scanner.nextInt();
+                if (controlador.CantidadDeJugadas() == 0){
+                    return -1; //si no hay jugadas sale
+                }
                 if (lugar < controlador.CantidadDeJugadas() + 1){ //se fija que el lugar sea igual que la cantida de jugadas
                     return lugar - 1;
                 }
@@ -152,6 +168,7 @@ public class VistaConsola implements IVista {
                 scanner.next(); // descarta el token inválido
             }
         }
+
     }
 
     private ArrayList<Integer> PedirCartasAnadir(){
@@ -175,7 +192,7 @@ public class VistaConsola implements IVista {
 
     public void imprimirMenu(){
         System.out.println("\n [1.Robar pote | 2.Tomar carta del mazo | 3.Abrirse | 4.Taponear pote | " +
-                "5. Agregar cartas a una canasta 6.Jugar canasta oculta 7.Ver jugadas 8. Ver tu mano]");
+                "5. Agregar cartas a una canasta | 6.Jugar canasta oculta | 7.Ver jugadas | 8. Ver tu mano | 9. mostrar 3 rojos en mesa.]");
         System.out.println(this.controlador.getJugador().getNombre() + " Ingrese una opcion: ");
     };
 
@@ -195,6 +212,27 @@ public class VistaConsola implements IVista {
         return c.getValor() + " " + c.getPalo() ;
     }
 
+    private void MostrarTresRojos(){
+        System.out.println("Los 3 rojos del equipo 1 son");
+        MostrarTresRojosBucle(1);
+        System.out.println("Los 3 rojos del equipo 2 son");
+        MostrarTresRojosBucle(2);
+    }
+
+    private void MostrarTresRojosBucle(Integer equipo){
+        ArrayList<Carta> jugadas;
+        jugadas = controlador.PasarTresRojos(equipo);
+        if (jugadas.isEmpty()){
+            System.out.println("No hay Tres Rojos");
+        }
+        else { //Solo hay 1 cojunto de tres rojos
+            for (Carta c : jugadas) {
+                System.out.print("- ");
+                System.out.printf(this.mostrarCarta(c));
+            }
+            System.out.println("");
+        }
+    }
 
     private void MostrarJugada() { //Muesta las jugadas que hay en mesa
         System.out.println("Las jugadas del equipo 1 son: ");
@@ -237,10 +275,7 @@ public class VistaConsola implements IVista {
 
     public Integer tieneTresRojos() {
         Integer cantidad;
-        cantidad = this.controlador.getJugador().jugarTresRojo();
-        if (cantidad != 0) {
-            System.out.println("Se jugadoron los 3 rojos");
-        }
+        cantidad = this.controlador.JugarTresRojos();
         return cantidad;
     }
 
@@ -302,36 +337,6 @@ public class VistaConsola implements IVista {
         System.out.println("Se puso " + this.mostrarCarta(inicial) + " en la mesa");
     }
 
-    public void jugadaInicial(){
-        boolean valida = true;
-        this.MostrarManoJugador();// Le muestro su mano ya que tiene que tomar una decision en base a ella
-        System.out.println("Te interesa llevarte el pote: \n1. si \n2.no");
-        while (valida) {
-            System.out.println("Elija una opcion: ");
-            String opcion = scanner.nextLine();
-            switch (opcion) {
-                case "1":
-                    if (this.controlador.robarPoteInicial()) { //si esto devuelve verdadero tambien hace la apcion
-                        valida = false;
-                        System.out.println("El jugador " + controlador.getJugador().getNombre() + " se robo el tope");
-                        //Controlador.HacerJugada
-                        break;
-                    } else {
-                        System.out.println("No cumple con las condiciones para hacer esta opcion. ");
-                    }
-                case "2":
-                    controlador.robarCartaMazo();
-                    controlador.robarCartaMazo();
-                    this.MostrarManoJugador(); // muestro la mano ya que tiene que elejir una carta para descartar
-                    validarOpcionDescarte(); //Descarta la carta una ves elejida esta opcion no hay vuelta atras
-                    valida = false;
-                    break;
-                default:
-                    this.mostrarError("Elija una opcion de 1 si o 2 no: ");
-            }
-        }
-    }
-
     private void validarOpcionDescarte(){
         if (this.controlador.getJugador().tamanoMano() <= 0 ){
             this.mostrarError("La mano no tiene cartas para descartar");
@@ -381,4 +386,40 @@ public class VistaConsola implements IVista {
     public void AvisarTapon() {
         System.out.println("Taponeado con exito");
     }
+
+    public void AvisarTresRojo(){
+        System.out.println("Se han colocado 3 rojos");
+    }
 }
+
+/*
+ public void jugadaInicial(){
+        boolean valida = true;
+        this.MostrarManoJugador();// Le muestro su mano ya que tiene que tomar una decision en base a ella
+        System.out.println("Te interesa llevarte el pote: \n1. si \n2.no");
+        while (valida) {
+            System.out.println("Elija una opcion: ");
+            String opcion = scanner.nextLine();
+            switch (opcion) {
+                case "1":
+                    if (this.controlador.robarPote()) { //si esto devuelve verdadero tambien hace la apcion
+                        valida = false;
+                        System.out.println("El jugador " + controlador.getJugador().getNombre() + " se robo el tope");
+                        //Controlador.HacerJugada
+                        break;
+                    } else {
+                        System.out.println("No cumple con las condiciones para hacer esta opcion. ");
+                    }
+                case "2":
+                    controlador.robarCartaMazo();
+                    controlador.robarCartaMazo();
+                    this.MostrarManoJugador(); // muestro la mano ya que tiene que elejir una carta para descartar
+                    validarOpcionDescarte(); //Descarta la carta una ves elejida esta opcion no hay vuelta atras
+                    valida = false;
+                    break;
+                default:
+                    this.mostrarError("Elija una opcion de 1 si o 2 no: ");
+            }
+        }
+    }
+ */
