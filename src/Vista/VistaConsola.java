@@ -11,6 +11,7 @@ import Partida.IJugador;
 public class VistaConsola implements IVista {
     private final Controlador controlador;
     private final Scanner scanner;
+    private boolean finalizo = false;
 
     public VistaConsola(Controlador controlador) {
         this.controlador = controlador;
@@ -35,7 +36,6 @@ public class VistaConsola implements IVista {
 
     private boolean procesarOpcion() {
         boolean bucle = true;
-        boolean termino = false;
         String opcion;
         while (bucle){
             this.imprimirMenu();
@@ -63,6 +63,7 @@ public class VistaConsola implements IVista {
                     jugada = this.controlador.Abrirse(PedirJugada()); // por ahora asi debe crearse un menu que pida que cartas quieren ser parte de las jugadas
                     if (jugada){ //la jugada si se realizo si no seguiria en este bucle
                         bucle = false;
+                        this.controlador.RevisarManoJugador();
                     }
                     scanner.nextLine();
                     break;
@@ -77,6 +78,7 @@ public class VistaConsola implements IVista {
                     boolean agregar = this.controlador.anadirCanasta(PedirGrupoAnadir(),PedirCartasAnadir()); //
                     if (agregar){
                         bucle = false;
+                        this.controlador.RevisarManoJugador();
                         break;
                     }//agregar cartas a una canasta (agregas cartas a una canasta para sumar mas puntos)
                     scanner.nextLine();
@@ -86,6 +88,7 @@ public class VistaConsola implements IVista {
                     canasta = this.controlador.Canasta(PedirJugada());
                     if (canasta){
                         bucle = false;
+                        this.controlador.RevisarManoJugador();
                         break;
                     }
                     scanner.nextLine();
@@ -107,7 +110,7 @@ public class VistaConsola implements IVista {
                     break;
             }
         }
-        return termino;// Devuelve verdadero cuando la partida acabe
+        return this.finalizo;// Devuelve verdadero cuando la partida acabe
     }
 
     private Integer pedirTapon(){
@@ -373,6 +376,10 @@ public class VistaConsola implements IVista {
         System.out.println("La jugada se hiso correctamente");
     }
 
+    public void AvisarAgregoCartaCanasta(){System.out.println("Se agrego una carta a una canasta");}
+
+    public void AvisarAbrirse(){System.out.println("El jugador " + controlador.getJugador().getNombre() + " se ha abierto");}
+
     public void AvisarNoJugada(){
         System.out.println("Esa jugada no es valida");
     }
@@ -390,36 +397,17 @@ public class VistaConsola implements IVista {
     public void AvisarTresRojo(){
         System.out.println("Se han colocado 3 rojos");
     }
-}
 
-/*
- public void jugadaInicial(){
-        boolean valida = true;
-        this.MostrarManoJugador();// Le muestro su mano ya que tiene que tomar una decision en base a ella
-        System.out.println("Te interesa llevarte el pote: \n1. si \n2.no");
-        while (valida) {
-            System.out.println("Elija una opcion: ");
-            String opcion = scanner.nextLine();
-            switch (opcion) {
-                case "1":
-                    if (this.controlador.robarPote()) { //si esto devuelve verdadero tambien hace la apcion
-                        valida = false;
-                        System.out.println("El jugador " + controlador.getJugador().getNombre() + " se robo el tope");
-                        //Controlador.HacerJugada
-                        break;
-                    } else {
-                        System.out.println("No cumple con las condiciones para hacer esta opcion. ");
-                    }
-                case "2":
-                    controlador.robarCartaMazo();
-                    controlador.robarCartaMazo();
-                    this.MostrarManoJugador(); // muestro la mano ya que tiene que elejir una carta para descartar
-                    validarOpcionDescarte(); //Descarta la carta una ves elejida esta opcion no hay vuelta atras
-                    valida = false;
-                    break;
-                default:
-                    this.mostrarError("Elija una opcion de 1 si o 2 no: ");
-            }
-        }
+    public void AvisarRoboDescarte(){
+        System.out.println("Se a robado el descarte");
     }
- */
+
+    public void AvisarGanoEquipo1(){
+        System.out.println("El equipo 1 a ganado el juego.");
+        finalizo = true;
+    }
+    public void AvisarGanoEquipo2(){
+        System.out.println("El equipo 2 ha ganado el juego.");
+        finalizo = true;
+    }
+}

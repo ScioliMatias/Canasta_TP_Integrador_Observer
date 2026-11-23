@@ -2,6 +2,7 @@ package Menus;
 
 import Cartas.Carta;
 import Controlador.Controlador;
+import Guardado.Serializador;
 import Partida.Equipo;
 import Partida.Jugador;
 import Partida.Mesa;
@@ -18,7 +19,7 @@ public class MenuIncial {
 
     //El menu solo se encarga de inciar la partida
     public MenuIncial(){
-        System.out.println("Seleciones una forma de jugar: " + "\n" + "1. 4 jugadores" + "\n" + "2. 6 jugadores");
+        System.out.println("Seleciones una forma de jugar: " + "\n" + "1. 2 jugadores" + "\n" + "2. 4 jugadores" + "\n3. 6 jugadores" + "\n4. ver top 5 jugadores");
         //Futura implementacion ver de resultados partida anteriores y ranking top 5 players guardados
         Scanner teclado = new Scanner(System.in);
         boolean entradaValida = false;
@@ -26,7 +27,7 @@ public class MenuIncial {
         while (!entradaValida) {
             try {
                 opcionMenu = teclado.nextInt();
-                if (opcionMenu > 0 && opcionMenu < 3){
+                if (opcionMenu > 0 && opcionMenu < 5){
                 entradaValida = true; }// Si la lectura es exitosa y se encuentra dentro de las opciones dadas sale del bucle
             } catch (InputMismatchException e) {
                 // Mensaje de error personalizado
@@ -37,7 +38,7 @@ public class MenuIncial {
         }
         Mesa mesa = new Mesa();
         if (opcionMenu == 1){
-            for (int i = 0; i < 4 ; i++){
+            for (int i = 0; i < 2 ; i++){
                 Controlador controlador = new Controlador(mesa);
                 VistaConsola vista = new VistaConsola(controlador);
                 vista.iniciar(); //La inicio para que no sea nulo parte importante
@@ -46,6 +47,15 @@ public class MenuIncial {
             this.EmpezarPartida();
         }
         if (opcionMenu == 2){
+            for (int i = 0; i < 4 ; i++){
+                Controlador controlador = new Controlador(mesa);
+                VistaConsola vista = new VistaConsola(controlador);
+                vista.iniciar(); //La inicio para que no sea nulo parte importante
+                jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+            }
+            this.EmpezarPartida();
+        }
+        if (opcionMenu == 3){
             for (int i = 0; i < 6 ; i++){
                 Controlador controlador = new Controlador(mesa);
                 VistaConsola vista = new VistaConsola(controlador);
@@ -53,6 +63,11 @@ public class MenuIncial {
                 jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
             }
             this.EmpezarPartida();
+        }
+        if (opcionMenu == 4){
+            Serializador serializador = new Serializador();
+            String top5 = serializador.obtenerTop5Ganadores();
+            System.out.println(top5);
         }
     }
 
@@ -110,7 +125,7 @@ public class MenuIncial {
         while (!termino){
             for (IVista v1: jugadores){ //Turno de cada jugador
                    termino  = v1.menu(); //Menu se encarga de los turnos
-                //lAS FUCIONES DEL JUEGO DEVERAN DEVOLVER UN BOOLEANO SIEMPRE SERA FALSO HASTA QUE DEVUELVAN EL FINAL DEL JUEGO EN ESE CASO PASA A TRUE Y SE ACABA LA PARTIDA
+
             }
         }
     }

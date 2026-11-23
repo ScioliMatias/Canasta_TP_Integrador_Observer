@@ -3,6 +3,7 @@ package Partida;
 import Cartas.Carta;
 import Cartas.Mazo;
 import Errores.NoExisteCartaPosicion;
+import Guardado.*;
 import Observer.Observable;
 import Vista.IVista;
 
@@ -17,7 +18,8 @@ public class Mesa extends Observable {
     private ArrayList<Carta> jugadasEquipo2 = new ArrayList<>(); //Guarda las jugadas que hayan echo los jugadores
     private ArrayList<Carta> treRojosEquipo2 = new ArrayList<>();
     private Carta corte = new Carta("Corte","0",0,-1000); //Place older para poner al corte de los mazos equipo1/2
-    Integer conteoE= 0;
+    private Integer conteoE= 0;
+
     //Cuando un jugador hace una jugada valida se guarda en el mazo equipo1/2 y se suman los puntos a los jugadores Esta se separan por un objeto carta con valor base -999 para poder
     //para saber cuando termina la jugada y empieza una nueva
 
@@ -75,7 +77,6 @@ public class Mesa extends Observable {
     }
 
     public Carta roboCarta(){ //Roba una carta del mazo
-        this.NotificarObservador(Evento.TOMAR_CARTAS_MAZO);
         return mazo.drawCart();
     }
 
@@ -217,5 +218,129 @@ public class Mesa extends Observable {
             this.treRojosEquipo2.addAll(tres);
         }
         this.NotificarObservador(Evento.JUGAR_TRES_ROJOS);
+    }
+
+    public void TerminarRonda(){//Funcion dedicada a terminar la ronda
+        this.reiniciarMazo(); //Reinicio el primer mazo
+        descarte = new Mazo(1); //Reinicio el descarte dejandolo vacio
+        this.ContarPuntos();
+        this.treRojosEquipo1 = new ArrayList<>();
+        this.treRojosEquipo2 = new ArrayList<>();
+        this.jugadasEquipo1 = new ArrayList<>();
+        this.jugadasEquipo2 = new ArrayList<>();
+
+    }
+
+    public void ContarPuntos(){
+        Integer puntosEquipo1=0;
+        Integer puntosEquipo2=0;
+        ArrayList<Carta> jugada = new ArrayList<>();
+        Integer puntos=0;
+        Integer contado = 0;
+        boolean canasta = false;
+        for (Carta c: jugadasEquipo1){
+            contado++;
+            jugada.add(c); //Agregamos valor hasta que llegue a 7 el conteo
+            if (c.getValorInicial() == -1000){contado = 0;
+            jugada = new ArrayList<>();} //reseteamos canasta
+            puntos += c.getPuntos(); //Primero sumamos los puntos de cada carta de manera individual
+            if (contado == 7){canasta = true;
+            puntos = puntos + ComprobadorDeCanasta(jugada); //agrego los puntos del tipo de canasta
+            jugada = new ArrayList<>();}
+        }
+        for (Carta c :treRojosEquipo1){puntos += c.getPuntos();} //sumamos los puntos de los 3 rojos
+        if (!canasta){puntos = puntos * -1;} //si no se hiso una canasta los puntos de la mesa pasan a ser negativos
+        this.SumarPuntos(puntos,1);// Sumamos los puntos
+        canasta = false;
+        for (Carta c: jugadasEquipo2){
+            contado++;
+            jugada.add(c); //Agregamos valor hasta que llegue a 7 el conteo
+            if (c.getValorInicial() == -1000){contado = 0;
+                jugada = new ArrayList<>();} //reseteamos canasta
+            puntos += c.getPuntos(); //Primero sumamos los puntos de cada carta de manera individual
+            if (contado == 7){canasta = true;
+                puntos = puntos + ComprobadorDeCanasta(jugada); //agrego los puntos del tipo de canasta
+                jugada = new ArrayList<>();}
+        }
+        if (!canasta){puntos = puntos * -1;}
+        for (Carta c :treRojosEquipo2){puntos += c.getPuntos();}
+        this.SumarPuntos(puntos,2); //agregamos los puntos al equipo 2
+    }
+    public Integer ComprobadorDeCanasta(ArrayList<Carta> canasta){//devuelve los puntos dependiendo de que tipo de canasta sea 3 negro gana la partida
+        boolean comodin = false;
+        boolean comodinJoker = false;
+        boolean cartaNormal = false;
+        boolean tresNegro = false;
+        Integer puntos = 0;
+        for (Carta c : canasta){
+            if (c.getValorInicial() == 999) {comodinJoker = true;}
+            if (c.getValorInicial() ==2 ){comodin = true;}
+            else {
+                cartaNormal = true;
+                if (c.getValorInicial() == 3){
+                    tresNegro = true;
+                }
+            }
+        }
+        if (cartaNormal && !comodin && !comodinJoker && !tresNegro){ //Canasta limpia
+            puntos = 500;
+        }
+        if (!cartaNormal && comodin && !comodinJoker && !tresNegro){
+            if (comodinJoker){
+                puntos = 2000;
+            }
+        }
+        else {if (!cartaNormal && comodinJoker && !tresNegro){
+            puntos = 2000;
+        }}
+        if (!cartaNormal && comodin && comodinJoker && !tresNegro){
+            puntos = 1000;
+        }
+        if (cartaNormal && comodin || comodinJoker && !tresNegro){
+            puntos = 300;
+        }
+        if (tresNegro&& !comodin && !comodinJoker){
+            puntos = 1000000000; //Gana la partida
+        }
+        return puntos;
+    }
+
+    private void SumarPuntos(Integer puntos, Integer equipo){
+        for (Map.Entry<Integer, IJugador> entry : jugadores.entrySet()) {
+            IJugador jugador = entry.getValue();
+            if (jugador.getEquipo() == equipo) {jugador.agregarRestarPuntos(puntos);}
+        }
+    }
+
+    public void alguienGano(){
+        Integer puntosEquipo1 = 0;
+        Integer puntosEquipo2 = 0;
+        boolean ganador = false;
+        for (Map.Entry<Integer, IJugador> entry : jugadores.entrySet()) {
+            IJugador jugador = entry.getValue();
+            if (jugador.getPuntos()  == 5000) { //Llegado a este punto tenemos un ganador
+                if (jugador.getEquipo() == 1){puntosEquipo1 = jugador.getPuntos();}
+                else {puntosEquipo2 = jugador.getPuntos();}
+                ganador = true;
+            }
+        }
+        if (puntosEquipo1 > puntosEquipo2){ //gano equipo 1
+            this.NotificarObservador(Evento.GANO_EQUIPO_UNO);
+            //Llamo a una funcion que recorra el hash map y guarde el nombre de los ganadores del equipo 1
+        }
+        else { // gano equipo 2
+            this.NotificarObservador(Evento.GANO_EQUIPO_DOS);
+            //Llamo a una funcion que recorra el hash map y guarde el nomrbe de los ganadores del equipo 2
+        }
+    }
+
+    private void GuardarGanadores(Integer equipo){
+        Serializador serializador = new Serializador();
+        for (Map.Entry<Integer , IJugador> entry : jugadores.entrySet()){
+            IJugador jugador = entry.getValue();
+            if (jugador.getEquipo() == equipo){ //guardo al ganador
+                serializador.registrarGanador((Jugador) jugador);
+            }
+        }
     }
 }

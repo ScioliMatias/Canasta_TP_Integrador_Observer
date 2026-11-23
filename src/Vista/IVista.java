@@ -24,14 +24,20 @@ public interface IVista {
     //Jugada
     void AvisarJugada();
     void AvisarNoJugada();
-
+    void AvisarAbrirse();
+    void AvisarAgregoCartaCanasta();
     //Tapon
     void AvisarTapon();
     void AvisarNoTapon();
 
     //descartarCarta
     void MostrarDescarte();
+    void AvisarRoboDescarte();
 
     //TresRojos
     void AvisarTresRojo();
+
+    //Ganar
+    public void AvisarGanoEquipo2();
+    public void AvisarGanoEquipo1();
 }

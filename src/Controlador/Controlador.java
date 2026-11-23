@@ -34,10 +34,25 @@ public class Controlador implements IObservador {
                 this.vista.MostrarDescarte(); //se muestra el nuevo tope de descarte
                 break;
             case AGREGAR_CARTA_CANASTA:
-                this.vista.AvisarJugada();
+                this.vista.AvisarAgregoCartaCanasta();
                 break;
             case JUGAR_TRES_ROJOS:
                 this.vista.AvisarTresRojo();
+                break;
+            case TOMAR_PILA:
+                this.vista.AvisarRoboDescarte();
+                break;
+            case ABRIRSE:
+                this.vista.AvisarAbrirse();
+                break;
+            case TAPONEAR_DESCARTE:
+                this.vista.AvisarTapon();
+                break;
+            case GANO_EQUIPO_UNO:
+                this.vista.AvisarGanoEquipo1();
+                break;
+            case GANO_EQUIPO_DOS:
+                this.vista.AvisarGanoEquipo2();
                 break;
             //Aca se escribirian los eventos y los cambios que deveria haber con los eventos creados
         }
@@ -201,5 +216,11 @@ public class Controlador implements IObservador {
         this.partida.JugarTresRojos(this.jugador, Tres);
         cantidad = Tres.size();
         return cantidad;
+    }
+
+    public void RevisarManoJugador(){ //Se fija si el jugador se quedo sin cartas en la mano
+        if (jugador.tamanoMano() == 0){
+            this.partida.TerminarRonda(); //cuenta los puntos de la ronda se fija si hay un ganador si no sigue
+        }
     }
 }
