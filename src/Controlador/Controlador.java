@@ -180,7 +180,7 @@ public class Controlador implements IObservador {
 
     public Integer CantidadDeJugadas(){
         Integer equipo = this.jugador.getEquipo();
-        ArrayList<Carta> jugadas = new ArrayList<>();
+        ArrayList<Carta> jugadas;
         Integer cantidad = 0;
         if (equipo == 1){
             jugadas = partida.getJugadasEquipo1();

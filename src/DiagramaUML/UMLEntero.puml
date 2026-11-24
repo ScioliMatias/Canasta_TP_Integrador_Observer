@@ -1,0 +1,359 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package Cartas {
+  class Carta {
+    - valor : String
+    - palo : String
+    - puntos : Integer
+    - valorInicial : Integer
+    + Carta(valor : String, palo : String, puntos : Integer, valorInicial : Integer)
+    + getValor() : String
+    + getPalo() : String
+    + getPuntos() : Integer
+    + getValorInicial() : Integer
+  }
+
+  class Mazo {
+    - mazo : ArrayList<Carta>
+    + Mazo()
+    + Mazo(i : Integer)
+    - vaciarMazo() : void
+    + reiniciarMazo() : void
+    - cargarCartas() : void
+    - asignarPuntos(valor : String, palo : String) : int
+    + drawCart() : Carta
+    + mostrarTope() : Carta
+    + drawLastCart() : Carta
+    + robarPila() : ArrayList<Carta>
+    + agregarCarta(carta : Carta) : void
+    + cortarMazo(corte : Integer) : void
+  }
+
+  Mazo "1" *-- "0..*" Carta : contiene >
+}
+
+package Errores {
+  class NoExisteCartaPosicion {
+    + NoExisteCartaPosicion(message : String)
+  }
+
+  NoExisteCartaPosicion --|> RuntimeException
+}
+
+package Observer {
+  interface IObservador {
+    + actualizar(observable : IObservable, e : Object) : void
+  }
+
+  interface IObservable {
+    + AgregarObserver(o : IObservador) : void
+    + RemoverObserver(o : IObservador) : void
+    + NotificarObservador(Evento : Object) : void
+  }
+
+  abstract class Observable {
+    - {final} observadores : List<IObservador>
+    + AgregarObserver(o : IObservador) : void
+    + RemoverObserver(o : IObservador) : void
+    + NotificarObservador(evento : Object) : void
+  }
+
+  Observable ..|> IObservable
+  Observable "1" o-- "0..*" IObservador : notifica >
+  IObservable ..> IObservador : observa >
+}
+
+package Guardado {
+  class AddableObjectOutStram {
+    + AddableObjectOutStram(out : OutputStream)
+    # AddableObjectOutStram()
+    # writeStreamHeader() : void
+  }
+
+  class Serializador {
+    - {final} ganadores : String
+    + Serializador()
+    + WriterObjerct(o : Object) : boolean
+    + addOneObject(o : Object) : boolean
+    + readObject() : Object[]
+    + registrarGanador(jugador : Partida.Jugador) : boolean
+    - limpiarNombreBase(nombre : String) : String
+    - contarVictorias(nombreBase : String) : int
+    + obtenerTop5Ganadores() : String
+  }
+
+  class EntradaRanking {
+    ~ nombre : String
+    ~ victorias : int
+    ~ EntradaRanking(nombre : String, victorias : int)
+  }
+
+  AddableObjectOutStram --|> java.io.ObjectOutputStream
+  Serializador +-- EntradaRanking
+  Serializador ..> AddableObjectOutStram : usa >
+}
+
+package Partida {
+  enum Evento {
+    TOMAR_PILA
+    ABRIRSE
+    TAPONEAR_DESCARTE
+    AGREGAR_CANASTA
+    AGREGAR_CARTA_CANASTA
+    DESCARTAR_CARTA
+    JUGAR_TRES_ROJOS
+    GANO_EQUIPO_UNO
+    GANO_EQUIPO_DOS
+  }
+
+  interface IJugador {
+    + getId() : int
+    + getNombre() : String
+    + mostrar_mano() : ArrayList<Carta>
+    + getPuntos() : Integer
+    + agregarDescarteMano(descarte : ArrayList<Carta>) : void
+    + agregarCartaMano(carta : Carta) : void
+    + VaciarMano() : void
+    + comprobarJugada(lugares : ArrayList<Integer>) : boolean
+    + abrirse(lugares : ArrayList<Integer>) : ArrayList<Carta>
+    + getEquipo() : Integer
+    + comprobarCanasta(lugares : ArrayList<Integer>) : boolean
+    + comprobarAnadir(lugares : ArrayList<Integer>) : boolean
+    + setEquipo(equipo : Integer) : void
+    + devolverCartasJugador(cartas : ArrayList<Carta>) : void
+    + jugarTresRojo() : ArrayList<Carta>
+    + JugarCartaDescarte(lugarCarta : Integer, tamanoMano : Integer) : Carta
+    + mostrarCartaRoboInicial() : Carta
+    + verCarta(lugar : Integer) : Carta
+    + tamanoMano() : Integer
+    + cortePerfecto() : void
+    + agregarRestarPuntos(cantidad : Integer) : void
+  }
+
+  class Jugador {
+    - nombre : String
+    - puntos : Integer
+    - Equipo : Integer
+    - mano : ArrayList<Carta>
+    - cortePerfecto : boolean
+    - {static} ID : int
+    - id : int
+    + Jugador(nombre : String)
+    + getPuntos() : Integer
+    + jugarTresRojo() : ArrayList<Carta>
+    + getId() : int
+    + setEquipo(equipo : Integer) : void
+    + getEquipo() : Integer
+    + getNombre() : String
+    + agregarCartaMano(carta : Carta) : void
+    + agregarDescarteMano(descarte : ArrayList<Carta>) : void
+    + mostrar_mano() : ArrayList<Carta>
+    + VaciarMano() : void
+    + JugarCartaDescarte(lugarCarta : Integer, tamanoMano : Integer) : Carta
+    + mostrarCartaRoboInicial() : Carta
+    + verCarta(lugar : Integer) : Carta
+    + tamanoMano() : Integer
+    + cortePerfecto() : void
+    + agregarRestarPuntos(cantidad : Integer) : void
+    + RealizoCanasta(Puntos : Integer) : void
+    + comprobarAnadir(lugares : ArrayList<Integer>) : boolean
+    + comprobarJugada(lugares : ArrayList<Integer>) : boolean
+    + comprobarCanasta(lugares : ArrayList<Integer>) : boolean
+    + abrirse(lugares : ArrayList<Integer>) : ArrayList<Carta>
+    + devolverCartasJugador(cartas : ArrayList<Carta>) : void
+  }
+
+  class Mesa {
+    - mazo : Cartas.Mazo
+    - descarte : Cartas.Mazo
+    - jugadores : HashMap<Integer, IJugador>
+    - jugadasEquipo1 : ArrayList<Carta>
+    - treRojosEquipo1 : ArrayList<Carta>
+    - jugadasEquipo2 : ArrayList<Carta>
+    - treRojosEquipo2 : ArrayList<Carta>
+    - corte : Carta
+    - conteoE : Integer
+    + Mesa()
+    + getJugadasEquipo1() : ArrayList<Carta>
+    + getJugadasEquipo2() : ArrayList<Carta>
+    + getTreRojosEquipo1() : ArrayList<Carta>
+    + getTreRojosEquipo2() : ArrayList<Carta>
+    + getDescarte() : Cartas.Mazo
+    + getDescarteVer() : Carta
+    + getMazo() : Cartas.Mazo
+    + conectarJugador(nombre : String) : IJugador
+    + getUsuario() : IJugador[]
+    + roboCarta() : Carta
+    + roboCartaUltima() : Carta
+    + reiniciarMazo() : void
+    + CortarMazo(jugador : IJugador) : boolean
+    + comprobarCorte(jugador : IJugador) : boolean
+    + repartirCartasInicialesMesa() : Carta
+    + abrirse(jugada : ArrayList<Carta>, jugador : IJugador) : void
+    + taponear(c : Carta) : void
+    + Agregar(jugada : ArrayList<Carta>, jugador : IJugador, lugar : Integer) : boolean
+    - AgregarNuevaCartas(cartaAbuscar : Carta, jugada : ArrayList<Carta>, equipo : ArrayList<Carta>, lugarAgregar : Integer) : boolean
+    + JugarCartaDescarte(carta : Carta) : void
+    - SumarPuntos(jugador : IJugador, puntos : Integer) : void
+    + JugarTresRojos(jugador : IJugador, tres : ArrayList<Carta>) : void
+    + TerminarRonda() : void
+    + ContarPuntos() : void
+    + ComprobadorDeCanasta(canasta : ArrayList<Carta>) : Integer
+    - SumarPuntos(puntos : Integer, equipo : Integer) : void
+    + alguienGano() : void
+    - GuardarGanadores(equipo : Integer) : void
+  }
+
+  Jugador ..|> IJugador
+  Jugador "1" o-- "0..*" Cartas.Carta : tiene en mano >
+  Jugador ..> Errores.NoExisteCartaPosicion : lanza >
+  IJugador ..> Cartas.Carta : usa >
+
+  Mesa --|> Observer.Observable
+  Mesa "1" *-- "2" Cartas.Mazo : mazo y descarte >
+  Mesa "1" *-- "0..*" Cartas.Carta : jugadas y cortes >
+  Mesa "1" o-- "0..*" IJugador : administra >
+  Mesa ..> Evento : notifica >
+  Mesa ..> Guardado.Serializador : usa >
+}
+
+package Vista {
+  interface IVista {
+    + MostrarJugadores(jugador : Partida.IJugador[]) : void
+    + MostrarManoJugador() : void
+    + iniciar() : void
+    + menu() : boolean
+    + devolverCartaRoboInicial() : Cartas.Carta
+    + RoboInicialJoquer() : Cartas.Carta
+    + mostrarQueInicia() : void
+    + vaciarMano() : void
+    + cortarMazo() : void
+    + RobarCarta() : void
+    + tieneTresRojos() : Integer
+    + repartirCartaInicialesMesa() : void
+    + AvisarJugada() : void
+    + AvisarNoJugada() : void
+    + AvisarAbrirse() : void
+    + AvisarAgregoCartaCanasta() : void
+    + AvisarTapon() : void
+    + AvisarNoTapon() : void
+    + MostrarDescarte() : void
+    + AvisarRoboDescarte() : void
+    + AvisarTresRojo() : void
+    + AvisarGanoEquipo2() : void
+    + AvisarGanoEquipo1() : void
+  }
+
+  class VistaConsola {
+    - {final} controlador : Controlador.Controlador
+    - {final} scanner : Scanner
+    - finalizo : boolean
+    + VistaConsola(controlador : Controlador.Controlador)
+    + MostrarJugadores(jugador : Partida.IJugador[]) : void
+    + menu() : boolean
+    - procesarOpcion() : boolean
+    - pedirTapon() : Integer
+    - PedirJugada() : ArrayList<Integer>
+    - PedirGrupoAnadir() : Integer
+    - PedirCartasAnadir() : ArrayList<Integer>
+    + imprimirMenu() : void
+    + MostrarManoJugador() : void
+    - mostrarCarta(c : Cartas.Carta) : String
+    - MostrarTresRojos() : void
+    - MostrarTresRojosBucle(equipo : Integer) : void
+    - MostrarJugada() : void
+    - MostrarJugadaBucle(equipo : Integer) : void
+    + iniciar() : void
+    + tieneTresRojos() : Integer
+    + RobarCarta() : void
+    + devolverCartaRoboInicial() : Cartas.Carta
+    + RoboInicialJoquer() : Cartas.Carta
+    + mostrarQueInicia() : void
+    + vaciarMano() : void
+    + cortarMazo() : void
+    + mostrarError(mensajeError : String) : void
+    + repartirCartaInicialesMesa() : void
+    - validarOpcionDescarte() : void
+    + MostrarDescarte() : void
+    + AvisarJugada() : void
+    + AvisarAgregoCartaCanasta() : void
+    + AvisarAbrirse() : void
+    + AvisarNoJugada() : void
+    + AvisarNoTapon() : void
+    + AvisarTapon() : void
+    + AvisarTresRojo() : void
+    + AvisarRoboDescarte() : void
+    + AvisarGanoEquipo1() : void
+    + AvisarGanoEquipo2() : void
+  }
+
+  VistaConsola ..|> IVista
+  VistaConsola ..> Partida.IJugador : usa >
+  IVista ..> Cartas.Carta : usa >
+  IVista ..> Partida.IJugador : usa >
+}
+
+package Controlador {
+  class Controlador {
+    - vista : Vista.IVista
+    - {final} partida : Partida.Mesa
+    - jugador : Partida.IJugador
+    + Controlador(partida : Partida.Mesa)
+    + setVista(vista : Vista.IVista) : void
+    + actualizar(observable : Observer.IObservable, e : Object) : void
+    + VerTopePilaDescarte() : Cartas.Carta
+    + getJugador() : Partida.IJugador
+    + conectarUsuario(nombre : String) : Partida.IJugador
+    + solicitarListaUsuario() : void
+    + GetMesa() : Partida.Mesa
+    + robarPote() : boolean
+    + robarCartaMazo() : void
+    + descartarUnaCarta(lugar : Integer) : void
+    + PasarJugadas(equipo : Integer) : ArrayList<Carta>
+    + PasarTresRojos(equipo : Integer) : ArrayList<Carta>
+    + Abrirse(lugares : ArrayList<Integer>) : boolean
+    + anadirCanasta(lugarJugada : Integer, lugares : ArrayList<Integer>) : boolean
+    + Canasta(lugares : ArrayList<Integer>) : boolean
+    + taponear(i : Integer) : boolean
+    + comprobarTapon(lugar : Integer) : boolean
+    + CantidadDeJugadas() : Integer
+    + JugarTresRojos() : Integer
+    + RevisarManoJugador() : void
+  }
+
+  Controlador ..|> Observer.IObservador
+}
+
+package Menus {
+  class MenuIncial {
+    - jugadores : ArrayList<Vista.IVista>
+    + MenuIncial()
+    - EmpezarPartida() : void
+    - repartirCartas() : void
+    - Turno() : void
+  }
+}
+
+' Relaciones entre paquetes (apuntando siempre a los nodos ya declarados)
+Guardado.Serializador ..> Partida.Jugador : usa >
+
+Vista.VistaConsola "1" --> "1" Controlador.Controlador : usa >
+
+Controlador.Controlador "1" --> "0..1" Vista.IVista : controla >
+Controlador.Controlador "1" --> "1" Partida.Mesa : opera sobre >
+Controlador.Controlador "1" --> "0..1" Partida.IJugador : jugador activo >
+Controlador.Controlador ..> Observer.IObservable : observa >
+Controlador.Controlador ..> Partida.Evento : interpreta >
+Controlador.Controlador ..> Cartas.Carta : usa >
+
+Menus.MenuIncial "1" o-- "0..*" Vista.IVista : gestiona turnos >
+Menus.MenuIncial "1" --> "0..*" Controlador.Controlador : apunta a >
+Menus.MenuIncial "1" --> "0..*" Partida.Mesa : apunta a >
+Menus.MenuIncial ..> Cartas.Carta : usa >
+Menus.MenuIncial ..> Guardado.Serializador : consulta >
+
+@enduml
