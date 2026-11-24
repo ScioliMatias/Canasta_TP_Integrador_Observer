@@ -17,56 +17,63 @@ public class MenuIncial {
     //El menu solo se encarga de inciar la partida
     public MenuIncial(){
         System.out.println("Seleciones una forma de jugar: " + "\n" + "1. 2 jugadores" + "\n" + "2. 4 jugadores" + "\n3. 6 jugadores" + "\n4. ver top 5 jugadores");
-        //Futura implementacion ver de resultados partida anteriores y ranking top 5 players guardados
-        Scanner teclado = new Scanner(System.in);
-        boolean entradaValida = false;
-        Integer opcionMenu = 0;//solo lee numeros la inicializamos
-        while (!entradaValida) {
-            try {
-                opcionMenu = teclado.nextInt();
-                if (opcionMenu > 0 && opcionMenu < 5){
-                entradaValida = true; }// Si la lectura es exitosa y se encuentra dentro de las opciones dadas sale del bucle
-            } catch (InputMismatchException e) {
-                // Mensaje de error personalizado
-                System.out.println("Error: Debes introducir un número entero. Inténtalo de nuevo.");
-                //Limpiar la vista
-                teclado.nextLine();
+        boolean decision = true;
+        while (decision){
+            Scanner teclado = new Scanner(System.in);
+            boolean entradaValida = false;
+            Integer opcionMenu = 0;//solo lee numeros la inicializamos
+            while (!entradaValida) {
+                try {
+                    opcionMenu = teclado.nextInt();
+                    if (opcionMenu > 0 && opcionMenu < 5){
+                    entradaValida = true; }// Si la lectura es exitosa y se encuentra dentro de las opciones dadas sale del bucle
+                } catch (InputMismatchException e) {
+                    // Mensaje de error personalizado
+                    System.out.println("Error: Debes introducir un número entero. Inténtalo de nuevo.");
+                    //Limpiar la vista
+                    teclado.nextLine();
+                }
             }
-        }
-        Mesa mesa = new Mesa();
-        if (opcionMenu == 1){
-            for (int i = 0; i < 2 ; i++){
-                Controlador controlador = new Controlador(mesa);
-                VistaConsola vista = new VistaConsola(controlador);
-                vista.iniciar(); //La inicio para que no sea nulo parte importante
-                jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+            Mesa mesa = new Mesa();
+            if (opcionMenu == 1) {
+                for (int i = 0; i < 2; i++) {
+                    Controlador controlador = new Controlador(mesa);
+                    VistaConsola vista = new VistaConsola(controlador);
+                    vista.iniciar(); //La inicio para que no sea nulo parte importante
+                    jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+                }
+                this.EmpezarPartida();
+                decision = false;
             }
-            this.EmpezarPartida();
-        }
-        if (opcionMenu == 2){
-            for (int i = 0; i < 4 ; i++){
-                Controlador controlador = new Controlador(mesa);
-                VistaConsola vista = new VistaConsola(controlador);
-                vista.iniciar(); //La inicio para que no sea nulo parte importante
-                jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+            if (opcionMenu == 2) {
+                for (int i = 0; i < 4; i++) {
+                    Controlador controlador = new Controlador(mesa);
+                    VistaConsola vista = new VistaConsola(controlador);
+                    vista.iniciar(); //La inicio para que no sea nulo parte importante
+                    jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+                }
+                this.EmpezarPartida();
+                decision = false;
             }
-            this.EmpezarPartida();
-        }
-        if (opcionMenu == 3){
-            for (int i = 0; i < 6 ; i++){
-                Controlador controlador = new Controlador(mesa);
-                VistaConsola vista = new VistaConsola(controlador);
-                vista.iniciar(); // lo mismo que arriba
-                jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+            if (opcionMenu == 3) {
+                for (int i = 0; i < 6; i++) {
+                    Controlador controlador = new Controlador(mesa);
+                    VistaConsola vista = new VistaConsola(controlador);
+                    vista.iniciar(); // lo mismo que arriba
+                    jugadores.add(vista); //Guardo la vista antes de pisar los datos con el nuevo jugador
+                }
+                this.EmpezarPartida();
+                decision = false;
             }
-            this.EmpezarPartida();
-        }
-        if (opcionMenu == 4){
-            Serializador serializador = new Serializador();
-            String top5 = serializador.obtenerTop5Ganadores();
-            System.out.println(top5);
+            if (opcionMenu == 4) {
+                Serializador serializador = new Serializador();
+                String top5 = serializador.obtenerTop5Ganadores();
+                System.out.println(top5);
+            }
         }
     }
+
+
 
     private void EmpezarPartida(){ //Tiene que decidir quien empieza la partida por la carta mas alta tambien arregla la lista de jugadores para que queden ordenados
         Integer iniciador = -1;

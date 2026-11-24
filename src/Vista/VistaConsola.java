@@ -33,11 +33,11 @@ public class VistaConsola implements IVista {
             switch (opcion){
                 case ("1"): //Roba el descarte
                     bucle = false;
-                    boolean Hecho = false;
+                    boolean Hecho;
                     Hecho = this.controlador.robarPote();
-                    while (!Hecho){
+                    while (Hecho){
                         this.MostrarManoJugador();
-                        Hecho = this.controlador.Abrirse(PedirJugada());
+                        Hecho = !this.controlador.Abrirse(PedirJugada());
                     }
                     break;
                 case ("2"): //tomar carta del mazo (agarrar 2 y tirar 1)
@@ -47,6 +47,7 @@ public class VistaConsola implements IVista {
                     this.tieneTresRojos(); //Si roba algun 3 rojo esta obligado a jugarlo
                     this.MostrarManoJugador();
                     this.validarOpcionDescarte();
+                    scanner.nextLine();
                     break;
                 case ("3"): //Hace una jugada entre 3 a 6 cartas no consideramos 7 ya que eso seria hacer una canasta
                     boolean jugada;
@@ -61,8 +62,8 @@ public class VistaConsola implements IVista {
                     Integer lugar = pedirTapon();
                     if (this.controlador.taponear(lugar)){
                         bucle = false;
-                        break;
                     }
+                    scanner.nextLine();
                     break;
                 case ("5"):
                     boolean agregar = this.controlador.anadirCanasta(PedirGrupoAnadir(),PedirCartasAnadir()); //
@@ -368,7 +369,7 @@ public class VistaConsola implements IVista {
 
     public void AvisarAgregoCartaCanasta(){System.out.println("Se agrego una carta a una canasta");}
 
-    public void AvisarAbrirse(){System.out.println("El jugador " + controlador.getJugador().getNombre() + " se ha abierto");}
+    public void AvisarAbrirse(){System.out.println("Un jugador se ha abierto");}
 
     public void AvisarNoJugada(){
         System.out.println("Esa jugada no es valida");

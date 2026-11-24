@@ -159,17 +159,16 @@ public class Controlador implements IObservador {
 
     public boolean taponear(Integer i){
         Carta c = this.jugador.JugarCartaDescarte(i,jugador.tamanoMano());
-        if (comprobarTapon(i)){
+        if (comprobarTapon(c)){
             this.partida.taponear(c);
             return true;
         }
-        else return false;
+        else {this.jugador.agregarCartaMano(c);
+            return false;}
     }
 
-    public boolean comprobarTapon(Integer lugar){
-        Carta c = this.jugador.verCarta(lugar);
-        if (c.getValorInicial() == -100 || c.getValorInicial() == 999 || c.getValorInicial() == 2){
-            this.vista.AvisarTapon();
+    public boolean comprobarTapon(Carta carta){
+        if (carta.getPuntos() == -100 || carta.getValorInicial() == 999 || carta.getValorInicial() == 2){
             return true;
         }
         else {
@@ -205,8 +204,8 @@ public class Controlador implements IObservador {
         Integer cantidad;
         ArrayList<Carta> Tres;
         Tres = this.jugador.jugarTresRojo();
-        this.partida.JugarTresRojos(this.jugador, Tres);
         cantidad = Tres.size();
+        if (cantidad != 0){this.partida.JugarTresRojos(this.jugador, Tres);};
         return cantidad;
     }
 
