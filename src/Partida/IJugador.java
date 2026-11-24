@@ -7,25 +7,25 @@ import java.util.List;
 
 public interface IJugador {
 
-    public int getId();
+    int getId();
     String getNombre();
-    public ArrayList<Carta> mostrar_mano();
-    public Integer getPuntos();
+    ArrayList<Carta> mostrar_mano();
+    Integer getPuntos();
     void agregarDescarteMano(ArrayList<Carta> descarte);
-    public void agregarCartaMano(Carta carta);
-    public void VaciarMano();
+    void agregarCartaMano(Carta carta);
+    void VaciarMano();
     //Abrise
-    public boolean comprobarJugada(ArrayList<Integer> lugares);
-    public ArrayList<Carta> abrirse(ArrayList<Integer> lugares);
-    public Integer getEquipo();
+    boolean comprobarJugada(ArrayList<Integer> lugares);
+    ArrayList<Carta> abrirse(ArrayList<Integer> lugares);
+    Integer getEquipo();
     //Canasta
-    public boolean comprobarCanasta(ArrayList<Integer> lugares);
+    boolean comprobarCanasta(ArrayList<Integer> lugares);
     //Anadir carta canasta
-    public boolean comprobarAnadir(ArrayList<Integer> lugares);
-    public void setEquipo(Integer equipo);
+    boolean comprobarAnadir(ArrayList<Integer> lugares);
+    void setEquipo(Integer equipo);
     void devolverCartasJugador(ArrayList<Carta> cartas);
     //TRES ROJOS
-    public ArrayList<Carta> jugarTresRojo();
+    ArrayList<Carta> jugarTresRojo();
 
     public Carta JugarCartaDescarte(Integer lugarCarta, Integer tamanoMano);
     public Carta mostrarCartaRoboInicial();
@@ -33,5 +33,4 @@ public interface IJugador {
     public Integer tamanoMano();
     public void cortePerfecto();
     public void agregarRestarPuntos(Integer cantidad);
-    public void RealizoCanasta(Integer Puntos);
 }

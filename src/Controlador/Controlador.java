@@ -7,8 +7,6 @@ import Partida.Evento;
 import Partida.IJugador;
 import Partida.Mesa;
 import Vista.IVista;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Controlador implements IObservador {
@@ -66,12 +64,6 @@ public class Controlador implements IObservador {
     public IJugador conectarUsuario(String nombre){
         this.jugador =this.partida.conectarJugador(nombre);
         return jugador;
-    }
-
-    public void solicitarListaUsuario(){
-        if (this.vista != null){
-            this.vista.MostrarJugadores(this.partida.getUsuario());
-        }
     }
 
     public Mesa GetMesa(){

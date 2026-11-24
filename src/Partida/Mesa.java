@@ -2,10 +2,8 @@ package Partida;
 
 import Cartas.Carta;
 import Cartas.Mazo;
-import Errores.NoExisteCartaPosicion;
 import Guardado.*;
 import Observer.Observable;
-import Vista.IVista;
 
 import java.util.*;
 
@@ -71,11 +69,6 @@ public class Mesa extends Observable {
         return u; //No aviso a nadie de que esto paso cosa a tener en cuenta
     }
 
-    public IJugador[] getUsuario(){
-        IJugador[] resultado = new Jugador[this.jugadores.size()];
-        return this.jugadores.values().toArray(resultado);
-    }
-
     public Carta roboCarta(){ //Roba una carta del mazo
         return mazo.drawCart();
     }
@@ -91,7 +84,6 @@ public class Mesa extends Observable {
     public boolean CortarMazo(IJugador jugador){ //devuelve verdadero si el corte es perfecto si no devuelve falso
         Random random = new Random();
         Integer corte = random.nextInt(107); //108 es el tamano del mazo
-        Carta RoboInicial;
         boolean perfecto = false;
         mazo.cortarMazo(corte);
         if (corte == 54){
@@ -206,10 +198,6 @@ public class Mesa extends Observable {
         this.NotificarObservador(Evento.DESCARTAR_CARTA);
     }
 
-    private void SumarPuntos(IJugador jugador,Integer puntos){
-        ;
-    }
-
     public void JugarTresRojos(IJugador jugador, ArrayList<Carta> tres){
         if (jugador.getEquipo() == 1){
             this.treRojosEquipo1.addAll(tres);
@@ -232,8 +220,6 @@ public class Mesa extends Observable {
     }
 
     public void ContarPuntos(){
-        Integer puntosEquipo1=0;
-        Integer puntosEquipo2=0;
         ArrayList<Carta> jugada = new ArrayList<>();
         Integer puntos=0;
         Integer contado = 0;

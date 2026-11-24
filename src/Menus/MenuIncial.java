@@ -3,14 +3,11 @@ package Menus;
 import Cartas.Carta;
 import Controlador.Controlador;
 import Guardado.Serializador;
-import Partida.Equipo;
-import Partida.Jugador;
 import Partida.Mesa;
 import Vista.IVista;
 import Vista.VistaConsola;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Scanner;
 
 //El menu esta encargado de aparte de ser el menu inicial hacer que los jugadores pasen entre si y finalizar la partida

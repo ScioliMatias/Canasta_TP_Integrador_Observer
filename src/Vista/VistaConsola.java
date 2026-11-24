@@ -5,7 +5,6 @@ import Controlador.Controlador;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-import Controlador.Controlador;
 import Partida.IJugador;
 
 public class VistaConsola implements IVista {
@@ -17,15 +16,6 @@ public class VistaConsola implements IVista {
         this.controlador = controlador;
         this.scanner = new Scanner(System.in);
         this.controlador.setVista(this);
-    }
-
-    @Override
-    public void MostrarJugadores(IJugador[] jugador) {
-        System.out.println("Lista de usuario" + "\n");
-        for (IJugador s : jugador) {
-            System.out.println(s.getNombre() + "-id-" + s.getId());
-        }
-        System.out.println("=========================");
     }
 
     public boolean menu() {
@@ -197,7 +187,7 @@ public class VistaConsola implements IVista {
         System.out.println("\n [1.Robar pote | 2.Tomar carta del mazo | 3.Abrirse | 4.Taponear pote | " +
                 "5. Agregar cartas a una canasta | 6.Jugar canasta oculta | 7.Ver jugadas | 8. Ver tu mano | 9. mostrar 3 rojos en mesa.]");
         System.out.println(this.controlador.getJugador().getNombre() + " Ingrese una opcion: ");
-    };
+    }
 
     @Override
     public void MostrarManoJugador() {

@@ -1,6 +1,5 @@
 package Guardado;
 
-import Menus.AddableObjectOutStram;
 import Partida.Jugador;
 
 import java.io.*;
