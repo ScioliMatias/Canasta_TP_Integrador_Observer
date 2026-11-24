@@ -4,6 +4,7 @@ import Cartas.Carta;
 import Cartas.Mazo;
 import Guardado.*;
 import Observer.Observable;
+import Vista.IVista;
 
 import java.util.*;
 
@@ -216,6 +217,15 @@ public class Mesa extends Observable {
         this.treRojosEquipo2 = new ArrayList<>();
         this.jugadasEquipo1 = new ArrayList<>();
         this.jugadasEquipo2 = new ArrayList<>();
+        if (!alguienGano()) {
+            this.repartirCartasInicialesMesa();
+            for (int i = 0; i < 15 ; i++){
+                for (Map.Entry<Integer, IJugador> entry : jugadores.entrySet()) {
+                    IJugador jugador = entry.getValue();
+                    jugador.agregarCartaMano(mazo.drawCart()); // roba cartas una por una hasta que todos tengan 15
+                }
+            }
+        }
 
     }
 
@@ -298,7 +308,7 @@ public class Mesa extends Observable {
         }
     }
 
-    public void alguienGano(){
+    public boolean alguienGano(){
         Integer puntosEquipo1 = 0;
         Integer puntosEquipo2 = 0;
         boolean ganador = false;
@@ -312,12 +322,15 @@ public class Mesa extends Observable {
         }
         if (puntosEquipo1 > puntosEquipo2){ //gano equipo 1
             this.NotificarObservador(Evento.GANO_EQUIPO_UNO);
+            GuardarGanadores(1);
             //Llamo a una funcion que recorra el hash map y guarde el nombre de los ganadores del equipo 1
         }
         else { // gano equipo 2
             this.NotificarObservador(Evento.GANO_EQUIPO_DOS);
+            GuardarGanadores(2);
             //Llamo a una funcion que recorra el hash map y guarde el nomrbe de los ganadores del equipo 2
         }
+        return ganador;
     }
 
     private void GuardarGanadores(Integer equipo){
